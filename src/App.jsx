@@ -7,6 +7,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import PhotoGallery from './pages/PhotoGallery'
 import AdminPanel from './pages/AdminPanel'
+import Documentation from './pages/Documentation'
 
 function App() {
   const { user, loading } = useAuth()
@@ -40,6 +41,14 @@ function App() {
             <div className="container mx-auto px-6 py-8 max-w-7xl">
               <AdminPanel />
             </div>
+          </AppLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/docs" element={
+        <ProtectedRoute>
+          <AppLayout>
+            <Documentation />
           </AppLayout>
         </ProtectedRoute>
       } />

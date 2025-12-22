@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LogOut, Shield, User as UserIcon, Zap, Bot } from 'lucide-react';
+import { LogOut, Shield, User as UserIcon, Zap, Bot, BookOpen } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
+import LanguageSelector from './LanguageSelector';
+import ThemeSelector from './ThemeSelector';
 
 export default function AppLayout({ children }) {
   const { user, logout, isAdmin, token } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [aiProvider, setAiProvider] = useState('ollama');
@@ -73,9 +77,9 @@ export default function AppLayout({ children }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col">
+    <div className="min-h-screen bg-slate-100 dark:bg-gray-900 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm">
+      <header className="bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700 shadow-sm">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
@@ -84,8 +88,8 @@ export default function AppLayout({ children }) {
                 <span className="text-2xl">📸</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Photo Manager</h1>
-                <p className="text-xs text-gray-500">Gestionnaire avec IA</p>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Smart Gallery</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{t('gallery.title')}</p>
               </div>
             </Link>
 
@@ -115,6 +119,21 @@ export default function AppLayout({ children }) {
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Language Selector */}
+              <LanguageSelector />
+
+              {/* Theme Selector */}
+              <ThemeSelector />
+
+              {/* Documentation Link */}
+              <Link
+                to="/docs"
+                className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <BookOpen className="w-5 h-5" />
+                <span className="hidden sm:inline text-sm font-medium">{t('header.documentation')}</span>
+              </Link>
+
               {/* Admin Button (visible pour les admins) */}
               {isAdmin() && (
                 <Link
@@ -122,7 +141,7 @@ export default function AppLayout({ children }) {
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all shadow-sm"
                 >
                   <Shield className="w-4 h-4" />
-                  <span className="hidden sm:inline">Admin</span>
+                  <span className="hidden sm:inline">{t('header.admin')}</span>
                 </Link>
               )}
 
