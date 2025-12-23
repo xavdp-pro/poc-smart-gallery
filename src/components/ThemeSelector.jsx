@@ -12,7 +12,7 @@ export default function ThemeSelector() {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'system';
+    return localStorage.getItem('theme') || 'light';
   });
   const dropdownRef = useRef(null);
 
