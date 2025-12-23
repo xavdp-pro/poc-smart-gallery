@@ -36,13 +36,13 @@ export const AI_PROVIDERS_CONFIG = {
   },
   openrouter: {
     id: 'openrouter',
-    name: 'OpenRouter Gemini Free',
+    name: 'OpenRouter Mistral Free',
     icon: '🟠',
     type: 'cloud',
     cost: 'gratuit',
     envKey: 'OPENROUTER_API_KEY',
-    model: 'google/gemini-2.0-flash-exp:free',
-    description: 'Gemini 2.0 Flash Exp - 100% gratuit (vision)'
+    model: 'mistralai/mistral-small-3.1-24b-instruct:free',
+    description: 'Mistral Small 3.1 24B - 100% gratuit (vision)'
   }
 };
 
