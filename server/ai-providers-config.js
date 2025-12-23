@@ -36,13 +36,13 @@ export const AI_PROVIDERS_CONFIG = {
   },
   openrouter: {
     id: 'openrouter',
-    name: 'OpenRouter Qwen 2.5 VL',
+    name: 'OpenRouter Gemini Flash',
     icon: '🟠',
     type: 'cloud',
-    cost: 'gratuit',
+    cost: 'payant',
     envKey: 'OPENROUTER_API_KEY',
-    model: 'qwen/qwen2.5-vl-32b-instruct:free',
-    description: 'Modèle gratuit 1000 appels/jour (Qwen Vision 32B)'
+    model: 'google/gemini-2.0-flash-001',
+    description: 'Gemini 2.0 Flash - rapide et économique (vision)'
   }
 };
 
@@ -52,7 +52,7 @@ export const AI_PROVIDERS_CONFIG = {
 export function isProviderAvailable(providerId) {
   const config = AI_PROVIDERS_CONFIG[providerId];
   if (!config) return false;
-  
+
   const envValue = process.env[config.envKey];
   return !!envValue;
 }
@@ -62,11 +62,11 @@ export function isProviderAvailable(providerId) {
  */
 export function getAvailableProviders() {
   const available = {};
-  
+
   Object.keys(AI_PROVIDERS_CONFIG).forEach(providerId => {
     available[providerId] = isProviderAvailable(providerId);
   });
-  
+
   return available;
 }
 
