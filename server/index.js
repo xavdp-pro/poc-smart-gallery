@@ -533,10 +533,13 @@ app.post('/api/photos/upload', authMiddleware, upload.single('photo'), async (re
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
+    // Décoder le nom de fichier UTF-8 (multer encode en latin1)
+    const originalName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
+
     // Save photo to database
     const result = createPhoto(
       req.file.filename,
-      req.file.originalname,
+      originalName,
       `/uploads/${req.file.filename}`,
       req.file.mimetype,
       req.file.size
