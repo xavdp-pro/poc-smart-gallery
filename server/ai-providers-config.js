@@ -36,13 +36,13 @@ export const AI_PROVIDERS_CONFIG = {
   },
   openrouter: {
     id: 'openrouter',
-    name: 'OpenRouter Gemini Flash',
+    name: 'OpenRouter Gemini Free',
     icon: '🟠',
     type: 'cloud',
-    cost: 'payant',
+    cost: 'gratuit',
     envKey: 'OPENROUTER_API_KEY',
-    model: 'google/gemini-2.0-flash-001',
-    description: 'Gemini 2.0 Flash - rapide et fiable (vision)'
+    model: 'google/gemini-2.0-flash-exp:free',
+    description: 'Gemini 2.0 Flash Exp - 100% gratuit (vision)'
   }
 };
 
