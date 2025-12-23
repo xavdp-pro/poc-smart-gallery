@@ -668,8 +668,8 @@ export default function PhotoGallery() {
         isOpen={deleteModal.isOpen}
         onClose={closeDeleteModal}
         onConfirm={handleDeletePhoto}
-        title="Supprimer la photo"
-        message={`Êtes-vous sûr de vouloir supprimer "${deleteModal.photoName}" ? Cette action est irréversible.`}
+        title={t('modals.deletePhoto')}
+        message={t('modals.deletePhotoConfirm', { name: deleteModal.photoName })}
         type="danger"
       />
       
@@ -1256,15 +1256,15 @@ export default function PhotoGallery() {
             </div>
             
             <h3 className="text-xl font-bold text-gray-900 mb-2">
-              Erreur {quotaErrorModal.provider}
+              {t('modals.quotaError', { provider: quotaErrorModal.provider })}
             </h3>
             
             <p className="text-gray-600 mb-2">
-              L'analyse IA ne peut pas être effectuée.
+              {t('modals.quotaErrorMessage')}
             </p>
             
             <p className="text-orange-600 font-bold text-lg mb-4">
-              ⚠️ Vérifier les crédits IA
+              {t('modals.quotaErrorWarning')}
             </p>
             
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
@@ -1275,11 +1275,11 @@ export default function PhotoGallery() {
             
             <div className="space-y-3">
               <div className="text-left bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-900 mb-2">💡 Solutions:</h4>
+                <h4 className="font-semibold text-blue-900 mb-2">{t('modals.solutions')}</h4>
                 <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• Recharger vos crédits {quotaErrorModal.provider}</li>
-                  <li>• Changer de modèle IA dans le sélecteur</li>
-                  <li>• Utiliser Ollama (gratuit, local)</li>
+                  <li>• {t('modals.solutionRecharge', { provider: quotaErrorModal.provider })}</li>
+                  <li>• {t('modals.solutionChangeModel')}</li>
+                  <li>• {t('modals.solutionUseOllama')}</li>
                 </ul>
               </div>
               
@@ -1287,7 +1287,7 @@ export default function PhotoGallery() {
                 onClick={() => setQuotaErrorModal({ isOpen: false, provider: '', error: '' })}
                 className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg"
               >
-                J'ai compris
+                {t('modals.understood')}
               </button>
             </div>
           </div>

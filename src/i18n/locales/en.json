@@ -135,5 +135,17 @@
     "aiAnalysis": "AI Analysis...",
     "complete": "Complete!",
     "error": "Error"
+  },
+  "modals": {
+    "deletePhoto": "Delete photo",
+    "deletePhotoConfirm": "Are you sure you want to delete \"{{name}}\"? This action is irreversible.",
+    "quotaError": "{{provider}} Error",
+    "quotaErrorMessage": "AI analysis cannot be performed.",
+    "quotaErrorWarning": "⚠️ Check AI credits",
+    "solutions": "💡 Solutions:",
+    "solutionRecharge": "Recharge your {{provider}} credits",
+    "solutionChangeModel": "Change AI model in the selector",
+    "solutionUseOllama": "Use Ollama (free, local)",
+    "understood": "Got it"
   }
 }

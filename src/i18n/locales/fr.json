@@ -135,5 +135,17 @@
     "aiAnalysis": "Analyse IA...",
     "complete": "Terminé !",
     "error": "Erreur"
+  },
+  "modals": {
+    "deletePhoto": "Supprimer la photo",
+    "deletePhotoConfirm": "Êtes-vous sûr de vouloir supprimer \"{{name}}\" ? Cette action est irréversible.",
+    "quotaError": "Erreur {{provider}}",
+    "quotaErrorMessage": "L'analyse IA ne peut pas être effectuée.",
+    "quotaErrorWarning": "⚠️ Vérifier les crédits IA",
+    "solutions": "💡 Solutions:",
+    "solutionRecharge": "Recharger vos crédits {{provider}}",
+    "solutionChangeModel": "Changer de modèle IA dans le sélecteur",
+    "solutionUseOllama": "Utiliser Ollama (gratuit, local)",
+    "understood": "J'ai compris"
   }
 }
