@@ -11,7 +11,7 @@ import '../App.css'
 
 export default function PhotoGallery() {
   const { token } = useAuth()
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [photos, setPhotos] = useState([])
   const [selectedPhoto, setSelectedPhoto] = useState(null)
   const [selectedPhotoTags, setSelectedPhotoTags] = useState([])
@@ -709,7 +709,7 @@ export default function PhotoGallery() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-500" />
                 <input
                   type="text"
-                  placeholder="Rechercher par nom..."
+                  placeholder={t('gallery.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
@@ -863,7 +863,7 @@ export default function PhotoGallery() {
                         {selectedPhoto.metadata && selectedPhoto.metadata.ai_model && (
                           <div className="mb-3">
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 text-purple-700 dark:text-purple-300 rounded-full border border-purple-200 dark:border-purple-700">
-                              🤖 Analysé par {
+                              🤖 {t('gallery.analyzedBy')} {
                                 selectedPhoto.metadata.ai_model === 'gpt-4o' ? 'OpenAI GPT-4o' : 
                                 selectedPhoto.metadata.ai_model === 'grok-2-vision-1212' ? 'Grok 2 Vision' : 
                                 selectedPhoto.metadata.ai_model === 'llava' ? 'Ollama LLaVA' : 
@@ -920,17 +920,17 @@ export default function PhotoGallery() {
                         )}
                         <div className="flex flex-wrap gap-3 text-sm text-slate-600 dark:text-gray-400">
                           <div className="flex items-center gap-1">
-                            <span className="font-medium">Taille:</span>
+                            <span className="font-medium">{t('gallery.size')}:</span>
                             <span>{formatFileSize(selectedPhoto.size)}</span>
                           </div>
                           <span>•</span>
                           <div className="flex items-center gap-1">
-                            <span className="font-medium">Type:</span>
+                            <span className="font-medium">{t('gallery.type')}:</span>
                             <span>{selectedPhoto.mime_type}</span>
                           </div>
                           <span>•</span>
                           <div className="flex items-center gap-1">
-                            <span className="font-medium">Ajoutée:</span>
+                            <span className="font-medium">{t('gallery.addedOn')}:</span>
                             <span>{new Date(selectedPhoto.created_at).toLocaleString()}</span>
                           </div>
                         </div>
@@ -983,7 +983,7 @@ export default function PhotoGallery() {
                           <div>
                             <h4 className="font-semibold text-sm text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-2">
                               <span className="text-lg">📝</span>
-                              Description IA
+                              {t('gallery.aiDescription')}
                             </h4>
                             <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed">
                               {selectedPhoto.metadata.description}
@@ -1002,7 +1002,7 @@ export default function PhotoGallery() {
                           <div>
                             <h4 className="font-semibold text-sm text-slate-700 dark:text-gray-200 mb-2 flex items-center gap-2">
                               <span className="text-lg">🎨</span>
-                              Couleurs dominantes
+                              {t('gallery.dominantColors')}
                             </h4>
                             <div className="flex gap-3">
                               {selectedPhoto.metadata.dominant_colors.map((color, idx) => (
@@ -1029,7 +1029,7 @@ export default function PhotoGallery() {
                           <div>
                             <h4 className="font-semibold text-sm text-slate-700 dark:text-gray-200 mb-3 flex items-center gap-2">
                               <span className="text-lg">⭐</span>
-                              Qualité de l'image
+                              {t('gallery.imageQuality')}
                             </h4>
                             <div className="space-y-3">
                               {/* Score global */}
@@ -1056,7 +1056,7 @@ export default function PhotoGallery() {
                               {/* Détails */}
                               <div className="grid grid-cols-3 gap-2 text-xs">
                                 <div className="bg-white dark:bg-gray-800 p-2 rounded-lg text-center">
-                                  <div className="font-medium text-slate-700 dark:text-gray-300">Netteté</div>
+                                  <div className="font-medium text-slate-700 dark:text-gray-300">{t('gallery.sharpness')}</div>
                                   <div className={`mt-1 capitalize font-semibold ${
                                     (selectedPhoto.metadata.quality_sharpness === 'excellent' || selectedPhoto.metadata.quality_sharpness === 'excellente') ? 'text-green-600' :
                                     (selectedPhoto.metadata.quality_sharpness === 'good' || selectedPhoto.metadata.quality_sharpness === 'bon' || selectedPhoto.metadata.quality_sharpness === 'bonne') ? 'text-blue-600' :
@@ -1067,7 +1067,7 @@ export default function PhotoGallery() {
                                   </div>
                                 </div>
                                 <div className="bg-white dark:bg-gray-800 p-2 rounded-lg text-center">
-                                  <div className="font-medium text-slate-700 dark:text-gray-300">Éclairage</div>
+                                  <div className="font-medium text-slate-700 dark:text-gray-300">{t('gallery.lighting')}</div>
                                   <div className={`mt-1 capitalize font-semibold ${
                                     (selectedPhoto.metadata.quality_lighting === 'excellent' || selectedPhoto.metadata.quality_lighting === 'excellente') ? 'text-green-600' :
                                     (selectedPhoto.metadata.quality_lighting === 'good' || selectedPhoto.metadata.quality_lighting === 'bon' || selectedPhoto.metadata.quality_lighting === 'bonne') ? 'text-blue-600' :
@@ -1078,7 +1078,7 @@ export default function PhotoGallery() {
                                   </div>
                                 </div>
                                 <div className="bg-white dark:bg-gray-800 p-2 rounded-lg text-center">
-                                  <div className="font-medium text-slate-700 dark:text-gray-300">Composition</div>
+                                  <div className="font-medium text-slate-700 dark:text-gray-300">{t('gallery.composition')}</div>
                                   <div className={`mt-1 capitalize font-semibold ${
                                     (selectedPhoto.metadata.quality_composition === 'excellent' || selectedPhoto.metadata.quality_composition === 'excellente') ? 'text-green-600' :
                                     (selectedPhoto.metadata.quality_composition === 'good' || selectedPhoto.metadata.quality_composition === 'bon' || selectedPhoto.metadata.quality_composition === 'bonne') ? 'text-blue-600' :
@@ -1136,7 +1136,7 @@ export default function PhotoGallery() {
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
-                    placeholder="Add a tag..."
+                    placeholder={t('gallery.addTagPlaceholder')}
                     className="flex-1 px-3 py-2 border border-slate-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
                     disabled={addingTag}
                   />
