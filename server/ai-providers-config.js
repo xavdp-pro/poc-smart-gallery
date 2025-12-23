@@ -36,13 +36,13 @@ export const AI_PROVIDERS_CONFIG = {
   },
   openrouter: {
     id: 'openrouter',
-    name: 'OpenRouter NVIDIA Free',
+    name: 'OpenRouter Gemini Flash',
     icon: '🟠',
     type: 'cloud',
-    cost: 'gratuit',
+    cost: 'économique',
     envKey: 'OPENROUTER_API_KEY',
-    model: 'nvidia/nemotron-nano-12b-v2-vl:free',
-    description: 'NVIDIA Nemotron 12B VL - 100% gratuit (vision)'
+    model: 'google/gemini-2.0-flash-001',
+    description: 'Gemini 2.0 Flash - très économique ~$0.0001/image'
   }
 };
 
