@@ -36,13 +36,13 @@ export const AI_PROVIDERS_CONFIG = {
   },
   openrouter: {
     id: 'openrouter',
-    name: 'OpenRouter Gemini Flash',
+    name: 'OpenRouter Qwen3 VL',
     icon: '🟠',
     type: 'cloud',
-    cost: 'payant',
+    cost: 'gratuit',
     envKey: 'OPENROUTER_API_KEY',
-    model: 'google/gemini-2.0-flash-001',
-    description: 'Gemini 2.0 Flash - rapide et économique (vision)'
+    model: 'qwen/qwen-2.5-vl-7b-instruct:free',
+    description: 'Qwen 2.5 VL 7B gratuit (vision)'
   }
 };
 
