@@ -1,0 +1,89 @@
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const zlib = require('zlib');
+
+const PORT = 9998;
+const DIST_DIR = path.join(__dirname, 'dist');
+
+// MIME types
+const mimeTypes = {
+    '.html': 'text/html',
+    '.js': 'text/javascript',
+    '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpg',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+    '.wav': 'audio/wav',
+    '.mp4': 'video/mp4',
+    '.woff': 'application/font-woff',
+    '.ttf': 'application/font-ttf',
+    '.eot': 'application/vnd.ms-fontobject',
+    '.otf': 'application/font-otf',
+    '.wasm': 'application/wasm'
+};
+
+const server = http.createServer({
+    keepAlive: true,
+    keepAliveTimeout: 300000, // 5 minutes
+    maxHeadersCount: 200,
+    timeout: 300000
+}, (req, res) => {
+    let filePath = path.join(DIST_DIR, req.url === '/' ? 'index.html' : req.url);
+
+    const extname = String(path.extname(filePath)).toLowerCase();
+    const contentType = mimeTypes[extname] || 'application/octet-stream';
+
+    fs.readFile(filePath, (error, content) => {
+        if (error) {
+            if (error.code == 'ENOENT') {
+                // SPA fallback
+                fs.readFile(path.join(DIST_DIR, 'index.html'), (error, content) => {
+                    if (error) {
+                        res.writeHead(500);
+                        res.end('Error loading index.html');
+                    } else {
+                        res.writeHead(200, {
+                            'Content-Type': 'text/html',
+                            'Connection': 'keep-alive',
+                            'Keep-Alive': 'timeout=300'
+                        });
+                        res.end(content, 'utf-8');
+                    }
+                });
+            } else {
+                res.writeHead(500);
+                res.end('Server Error: ' + error.code);
+            }
+        } else {
+            res.writeHead(200, {
+                'Content-Type': contentType,
+                'Connection': 'keep-alive',
+                'Keep-Alive': 'timeout=300',
+                'Cache-Control': contentType === 'text/html' ? 'no-cache' : 'public, max-age=86400'
+            });
+            res.end(content, 'utf-8');
+        }
+    });
+});
+
+server.keepAliveTimeout = 300000;
+server.headersTimeout = 310000;
+
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ HTTP server running on http://0.0.0.0:${PORT}`);
+    console.log(`📂 Serving: ${DIST_DIR}`);
+    console.log(`🔌 Keep-Alive: 300s`);
+});
+
+process.on('SIGTERM', () => {
+    console.log('SIGTERM - Closing server...');
+    server.close(() => process.exit(0));
+});
+
+process.on('SIGINT', () => {
+    console.log('SIGINT - Closing server...');
+    server.close(() => process.exit(0));
+});

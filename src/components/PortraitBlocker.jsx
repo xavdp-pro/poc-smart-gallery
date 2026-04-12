@@ -2,17 +2,24 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RotateCcw, Monitor, Smartphone } from 'lucide-react';
 
+import { useLocation } from 'react-router-dom';
+
 export default function PortraitBlocker({ children }) {
   const { t } = useTranslation();
+  const location = useLocation();
   const [isPortrait, setIsPortrait] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // List of paths where we allow portrait mode
+  const publicPaths = ['/login', '/forgot-password'];
+  const isPublicPath = publicPaths.some(path => location.pathname.startsWith(path));
 
   useEffect(() => {
     const checkOrientation = () => {
       const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const portrait = window.innerHeight > window.innerWidth;
       const smallScreen = window.innerWidth < 768;
-      
+
       setIsMobile(mobile || smallScreen);
       setIsPortrait(portrait && (mobile || smallScreen));
     };
@@ -28,7 +35,7 @@ export default function PortraitBlocker({ children }) {
     };
   }, []);
 
-  if (isPortrait && isMobile) {
+  if (isPortrait && isMobile && !isPublicPath) {
     return (
       <div className="fixed inset-0 bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center z-[9999]">
         <div className="text-center text-white p-8 max-w-md">
@@ -45,7 +52,7 @@ export default function PortraitBlocker({ children }) {
           <h1 className="text-2xl font-bold mb-4">
             {t('mobile.rotateDevice')}
           </h1>
-          
+
           <p className="text-lg text-white/80 mb-6">
             {t('mobile.landscapeRequired')}
           </p>

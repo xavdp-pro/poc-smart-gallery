@@ -28,7 +28,13 @@
     "loginError": "Invalid email or password",
     "logoutSuccess": "Logged out successfully",
     "resetEmailSent": "Reset email sent",
-    "passwordChanged": "Password changed successfully"
+    "passwordChanged": "Password changed successfully",
+    "subtitle": "Sign in to access your photos",
+    "demoAccount": "Demo Account",
+    "appName": "Photo Manager",
+    "appDescription": "AI Photo Manager",
+    "autoFill": "Auto Fill",
+    "credentialsFilled": "Credentials filled!"
   },
   "gallery": {
     "title": "Photo Gallery",

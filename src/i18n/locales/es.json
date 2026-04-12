@@ -28,7 +28,13 @@
     "loginError": "Correo o contraseña incorrectos",
     "logoutSuccess": "Sesión cerrada correctamente",
     "resetEmailSent": "Correo de restablecimiento enviado",
-    "passwordChanged": "Contraseña cambiada correctamente"
+    "passwordChanged": "Contraseña cambiada correctamente",
+    "subtitle": "Inicia sesión para acceder a tus fotos",
+    "demoAccount": "Cuenta de demostración",
+    "appName": "Photo Manager",
+    "appDescription": "Gestor de fotos con IA",
+    "autoFill": "Rellenar",
+    "credentialsFilled": "¡Credenciales rellenadas!"
   },
   "gallery": {
     "title": "Galería de Fotos",

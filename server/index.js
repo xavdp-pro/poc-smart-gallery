@@ -82,12 +82,18 @@ io.on('connection', (socket) => {
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = join(__dirname, '..', 'uploads');
+const distDir = join(__dirname, '..', 'dist');
 if (!existsSync(uploadsDir)) {
   mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Serve uploaded files
 app.use('/uploads', express.static(uploadsDir));
+
+// In Docker/single-server mode: serve built frontend (SPA)
+if (process.env.SERVE_APP === '1' && existsSync(distDir)) {
+  app.use(express.static(distDir));
+}
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -738,8 +744,14 @@ app.delete('/api/photos/:photoId/tags/:tagId', authMiddleware, (req, res) => {
   }
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+// SPA fallback (must be after all API routes)
+if (process.env.SERVE_APP === '1' && existsSync(distDir)) {
+  app.get('*', (req, res) => res.sendFile(join(distDir, 'index.html')));
+}
+
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   console.log(`📸 Photo Manager API ready!`);
   console.log(`🔌 WebSocket ready for real-time updates`);
+  if (process.env.SERVE_APP === '1') console.log(`📂 Serving app from dist`);
 });

@@ -36,13 +36,33 @@ export const AI_PROVIDERS_CONFIG = {
   },
   openrouter: {
     id: 'openrouter',
-    name: 'OpenRouter Gemini Flash',
+    name: 'OpenRouter Gemini Flash 2.0',
     icon: '🟠',
     type: 'cloud',
     cost: 'économique',
     envKey: 'OPENROUTER_API_KEY',
     model: 'google/gemini-2.0-flash-001',
-    description: 'Gemini 2.0 Flash - très économique ~$0.0001/image'
+    description: 'Gemini 2.0 Flash - Très économique et rapide'
+  },
+  openrouter_claude: {
+    id: 'openrouter_claude',
+    name: 'OpenRouter Claude 3.5',
+    icon: '🟣',
+    type: 'cloud',
+    cost: 'payant',
+    envKey: 'OPENROUTER_API_KEY',
+    model: 'anthropic/claude-3.5-sonnet',
+    description: 'Claude 3.5 Sonnet - Très performant pour la description'
+  },
+  openrouter_llama: {
+    id: 'openrouter_llama',
+    name: 'OpenRouter Llama 3',
+    icon: '🦙',
+    type: 'cloud',
+    cost: 'économique',
+    envKey: 'OPENROUTER_API_KEY',
+    model: 'meta-llama/llama-3.2-11b-vision-instruct',
+    description: 'Llama 3.2 Vision - Open source et rapide'
   }
 };
 

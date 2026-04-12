@@ -28,7 +28,13 @@
     "loginError": "Email ou mot de passe incorrect",
     "logoutSuccess": "Déconnexion réussie",
     "resetEmailSent": "Email de réinitialisation envoyé",
-    "passwordChanged": "Mot de passe modifié avec succès"
+    "passwordChanged": "Mot de passe modifié avec succès",
+    "subtitle": "Connectez-vous pour accéder à vos photos",
+    "demoAccount": "Compte de démonstration",
+    "appName": "Photo Manager",
+    "appDescription": "Gestionnaire de photos avec IA",
+    "autoFill": "Remplir",
+    "credentialsFilled": "Identifiants remplis!"
   },
   "gallery": {
     "title": "Galerie Photos",

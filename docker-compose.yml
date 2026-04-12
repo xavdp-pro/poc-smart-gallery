@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    image: smart-gallery:latest
+    container_name: smart-gallery
+    restart: unless-stopped
+    # Same as local: frontend was on 9998, backend on 8888 → expose 9998 for app access
+    ports:
+      - "9998:8888"
+    environment:
+      - NODE_ENV=production
+      - SERVE_APP=1
+      - DATABASE_PATH=/app/data/database.db
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      # Set to your public URL when using Cloudflare Tunnel (e.g. https://smart-gallery.xavdp.pro)
+      - APP_URL=${APP_URL:-http://localhost:9998}
+      # Optional: AI providers
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - GROK_API_KEY=${GROK_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - OLLAMA_URL=${OLLAMA_URL:-}
+      # Optional: email (password reset)
+      - MAILJET_API_KEY=${MAILJET_API_KEY:-}
+      - MAILJET_SECRET_KEY=${MAILJET_SECRET_KEY:-}
+      - EMAIL_FROM=${EMAIL_FROM:-}
+    volumes:
+      - gallery-data:/app/data
+      - gallery-uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8888/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  gallery-data:
+  gallery-uploads:
