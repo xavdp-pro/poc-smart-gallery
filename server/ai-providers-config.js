@@ -1,7 +1,9 @@
 /**
  * Configuration centralisée des providers IA
- * Cette configuration est utilisée par le backend ET le frontend
+ * FREE_ONLY : uniquement modèles gratuits (Ollama local + OpenRouter :free)
  */
+
+export const FREE_ONLY = true;
 
 export const AI_PROVIDERS_CONFIG = {
   openai: {
@@ -10,9 +12,10 @@ export const AI_PROVIDERS_CONFIG = {
     icon: '🔵',
     type: 'cloud',
     cost: 'payant',
+    free: false,
     envKey: 'OPENAI_API_KEY',
     model: 'gpt-4o',
-    description: 'Modèle le plus puissant, analyse exhaustive'
+    description: 'Modèle payant — désactivé en mode gratuit uniquement'
   },
   grok: {
     id: 'grok',
@@ -20,9 +23,10 @@ export const AI_PROVIDERS_CONFIG = {
     icon: '🟣',
     type: 'cloud',
     cost: 'payant',
+    free: false,
     envKey: 'GROK_API_KEY',
     model: 'grok-2-vision-1212',
-    description: 'Modèle alternatif puissant'
+    description: 'Modèle payant — désactivé en mode gratuit uniquement'
   },
   ollama: {
     id: 'ollama',
@@ -30,79 +34,74 @@ export const AI_PROVIDERS_CONFIG = {
     icon: '🦙',
     type: 'local',
     cost: 'gratuit',
+    free: true,
     envKey: 'OLLAMA_URL',
-    model: 'llava:7b',
-    description: 'Modèle local gratuit illimité'
+    model: 'llava:latest',
+    description: 'Le plus rapide (~4 s), gratuit et illimité sur votre serveur'
   },
   openrouter: {
     id: 'openrouter',
-    name: 'OpenRouter Gemini Flash 2.0',
+    name: 'OpenRouter Nemotron VL (gratuit)',
     icon: '🟠',
     type: 'cloud',
-    cost: 'économique',
+    cost: 'gratuit',
+    free: true,
     envKey: 'OPENROUTER_API_KEY',
-    model: 'google/gemini-2.0-flash-001',
-    description: 'Gemini 2.0 Flash - Très économique et rapide'
-  },
-  openrouter_claude: {
-    id: 'openrouter_claude',
-    name: 'OpenRouter Claude 3.5',
-    icon: '🟣',
-    type: 'cloud',
-    cost: 'payant',
-    envKey: 'OPENROUTER_API_KEY',
-    model: 'anthropic/claude-3.5-sonnet',
-    description: 'Claude 3.5 Sonnet - Très performant pour la description'
-  },
-  openrouter_llama: {
-    id: 'openrouter_llama',
-    name: 'OpenRouter Llama 3',
-    icon: '🦙',
-    type: 'cloud',
-    cost: 'économique',
-    envKey: 'OPENROUTER_API_KEY',
-    model: 'meta-llama/llama-3.2-11b-vision-instruct',
-    description: 'Llama 3.2 Vision - Open source et rapide'
+    model: 'nvidia/nemotron-nano-12b-v2-vl:free',
+    description: 'Vision-language NVIDIA 12B — 0 € via OpenRouter (:free)'
   }
 };
 
-/**
- * Vérifie si un provider est disponible (clé API configurée)
- */
-export function isProviderAvailable(providerId) {
-  const config = AI_PROVIDERS_CONFIG[providerId];
-  if (!config) return false;
+/** Modèles vision gratuits OpenRouter (fallback si le principal échoue) */
+export const OPENROUTER_FREE_VISION_MODELS = [
+  'nvidia/nemotron-nano-12b-v2-vl:free',
+  'google/gemma-4-31b-it:free',
+  'google/gemma-4-26b-a4b-it:free',
+  'openrouter/free',
+];
 
-  const envValue = process.env[config.envKey];
-  return !!envValue;
+export function isProviderFree(providerId) {
+  return AI_PROVIDERS_CONFIG[providerId]?.free === true;
 }
 
-/**
- * Retourne la liste des providers disponibles
- */
+export function isProviderAllowed(providerId) {
+  if (!AI_PROVIDERS_CONFIG[providerId]) return false;
+  if (FREE_ONLY && !isProviderFree(providerId)) return false;
+  return true;
+}
+
+export function isProviderAvailable(providerId) {
+  if (!isProviderAllowed(providerId)) return false;
+  const config = AI_PROVIDERS_CONFIG[providerId];
+  return !!process.env[config.envKey];
+}
+
 export function getAvailableProviders() {
   const available = {};
-
-  Object.keys(AI_PROVIDERS_CONFIG).forEach(providerId => {
+  Object.keys(AI_PROVIDERS_CONFIG).forEach((providerId) => {
     available[providerId] = isProviderAvailable(providerId);
   });
-
   return available;
 }
 
-/**
- * Retourne les informations complètes d'un provider
- */
 export function getProviderInfo(providerId) {
   return AI_PROVIDERS_CONFIG[providerId] || null;
 }
 
-/**
- * Retourne tous les providers avec leur disponibilité
- */
 export function getAllProvidersInfo() {
-  return Object.keys(AI_PROVIDERS_CONFIG).map(providerId => ({
-    ...AI_PROVIDERS_CONFIG[providerId],
-    available: isProviderAvailable(providerId)
-  }));
+  return Object.keys(AI_PROVIDERS_CONFIG)
+    .filter(isProviderAllowed)
+    .map((providerId) => ({
+      ...AI_PROVIDERS_CONFIG[providerId],
+      available: isProviderAvailable(providerId),
+    }));
+}
+
+export function getDefaultFreeProvider() {
+  // Ollama local : ~4 s/analyse | OpenRouter :free : ~20–40 s
+  const order = ['ollama', 'openrouter'];
+  for (const id of order) {
+    if (isProviderAvailable(id)) return id;
+  }
+  return 'ollama';
 }

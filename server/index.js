@@ -39,6 +39,13 @@ import {
 import { photoQueue } from './queue.js';
 import { generateToken, authMiddleware, adminMiddleware } from './auth.js';
 import { sendPasswordResetEmail, sendWelcomeEmail, verifyEmailConfig } from './email.js';
+import {
+  getAvailableProviders,
+  getAllProvidersInfo,
+  getDefaultFreeProvider,
+  isProviderAllowed,
+  isProviderAvailable,
+} from './ai-providers-config.js';
 
 dotenv.config();
 
@@ -436,9 +443,11 @@ app.post('/api/admin/test-email', authMiddleware, adminMiddleware, async (req, r
 app.get('/api/admin/ai-settings', authMiddleware, async (req, res) => {
   try {
     const providerSetting = getSetting('ai_provider');
-    const provider = providerSetting?.value || 'ollama';
+    let provider = providerSetting?.value || getDefaultFreeProvider();
+    if (!isProviderAllowed(provider)) {
+      provider = getDefaultFreeProvider();
+    }
 
-    // Récupérer les providers activés par l'admin (sauvegardés en base)
     const enabledProvidersSetting = getSetting('enabled_providers');
     let enabledProviders = {};
 
@@ -450,19 +459,20 @@ app.get('/api/admin/ai-settings', authMiddleware, async (req, res) => {
       }
     }
 
-    // Import dynamique de la config des providers
-    const { getAvailableProviders, getAllProvidersInfo } = await import('./ai-providers-config.js');
-
-    // Si aucun provider activé n'est sauvegardé, utiliser ceux qui ont une clé API
     const availableWithKeys = getAvailableProviders();
-    const availableModels = Object.keys(enabledProviders).length > 0 ? enabledProviders : availableWithKeys;
+    const freeDefaults = Object.fromEntries(
+      getAllProvidersInfo().map((p) => [p.id, availableWithKeys[p.id] === true])
+    );
+    let availableModels = Object.keys(enabledProviders).length > 0 ? enabledProviders : freeDefaults;
+    // Mode gratuit : ignorer openai/grok même si encore en base
+    for (const id of Object.keys(availableModels)) {
+      if (!isProviderAllowed(id)) availableModels[id] = false;
+    }
 
-    // Retourner seulement les providers activés ET qui ont une clé API
-    const providersInfo = getAllProvidersInfo()
-      .map(p => ({
-        ...p,
-        available: availableModels[p.id] === true && availableWithKeys[p.id] === true
-      }));
+    const providersInfo = getAllProvidersInfo().map((p) => ({
+      ...p,
+      available: availableModels[p.id] === true && availableWithKeys[p.id] === true,
+    }));
 
     res.json({
       provider,
@@ -480,8 +490,14 @@ app.post('/api/admin/ai-settings', authMiddleware, adminMiddleware, (req, res) =
   try {
     const { provider, availableModels } = req.body;
 
-    if (!provider || !['openai', 'grok', 'ollama', 'openrouter'].includes(provider)) {
-      return res.status(400).json({ error: 'Provider invalide' });
+    if (!provider || !isProviderAllowed(provider) || !isProviderAvailable(provider)) {
+      return res.status(400).json({ error: 'Provider invalide ou non gratuit' });
+    }
+
+    if (availableModels) {
+      for (const id of Object.keys(availableModels)) {
+        if (!isProviderAllowed(id)) availableModels[id] = false;
+      }
     }
 
     // Sauvegarder le provider actif

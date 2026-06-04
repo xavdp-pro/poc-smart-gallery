@@ -8,7 +8,7 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 9999,
     strictPort: true,
-    allowedHosts: ['smartgallery.xavdp.pro'],
+    allowedHosts: ['smart-gallery.xavdp.pro', 'smartgallery.xavdp.pro'],
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8888',

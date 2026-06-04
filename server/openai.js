@@ -2,7 +2,12 @@ import OpenAI from 'openai';
 import { readFileSync } from 'fs';
 import dotenv from 'dotenv';
 import { getSetting } from './database.js';
-import { AI_PROVIDERS_CONFIG } from './ai-providers-config.js';
+import {
+  AI_PROVIDERS_CONFIG,
+  OPENROUTER_FREE_VISION_MODELS,
+  isProviderAllowed,
+  getDefaultFreeProvider,
+} from './ai-providers-config.js';
 
 dotenv.config();
 
@@ -117,11 +122,38 @@ const LANGUAGE_CONFIG = {
   }
 };
 
+async function openrouterVisionCompletion(client, messages, maxTokens = 3000) {
+  const models = [
+    AI_PROVIDERS_CONFIG.openrouter.model,
+    ...OPENROUTER_FREE_VISION_MODELS.filter((m) => m !== AI_PROVIDERS_CONFIG.openrouter.model),
+  ];
+
+  let lastError;
+  for (const model of models) {
+    try {
+      console.log('🌐 OpenRouter try model:', model);
+      return await client.chat.completions.create({
+        model,
+        messages,
+        max_tokens: maxTokens,
+        temperature: 0.7,
+      });
+    } catch (err) {
+      lastError = err;
+      console.warn(`⚠️ OpenRouter model ${model} failed:`, err.message);
+    }
+  }
+  throw lastError;
+}
+
 export async function analyzeImage(imagePath, language = 'fr') {
   try {
-    // Récupérer le provider configuré
     const providerSetting = getSetting('ai_provider');
-    const provider = providerSetting?.value || 'ollama';
+    let provider = providerSetting?.value || getDefaultFreeProvider();
+    if (!isProviderAllowed(provider)) {
+      provider = getDefaultFreeProvider();
+      console.warn(`⚠️ Provider non autorisé (mode gratuit), bascule sur ${provider}`);
+    }
 
     // Récupérer la config de langue (défaut: français)
     const langConfig = LANGUAGE_CONFIG[language] || LANGUAGE_CONFIG.fr;
@@ -146,7 +178,7 @@ export async function analyzeImage(imagePath, language = 'fr') {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llava:7b',
+          model: AI_PROVIDERS_CONFIG.ollama.model,
           prompt: langConfig.ollamaPrompt,
           images: [base64Image],
           stream: false
@@ -291,24 +323,8 @@ export async function analyzeImage(imagePath, language = 'fr') {
       };
     }
 
-    // Choisir le client et le modèle selon le provider
-    let client, model;
-
-    if (provider === 'grok') {
-      client = grok;
-      model = AI_PROVIDERS_CONFIG.grok.model;
-    } else if (provider === 'openrouter') {
-      console.log('🌐 Using OpenRouter with model:', AI_PROVIDERS_CONFIG.openrouter.model);
-      client = openrouter;
-      model = AI_PROVIDERS_CONFIG.openrouter.model;
-    } else {
-      client = openai;
-      model = AI_PROVIDERS_CONFIG.openai.model;
-    }
-
-    const response = await client.chat.completions.create({
-      model: model,
-      messages: [
+    if (provider === 'openrouter') {
+      const messages = [
         {
           role: "system",
           content: langConfig.systemPrompt
@@ -373,18 +389,26 @@ Return ONLY the JSON object, no other text.`
             },
           ],
         },
-      ],
-      max_tokens: 3000,
-      temperature: 0.7,
-    });
+      ];
 
-    const content = response.choices[0].message.content.trim();
+      const response = await openrouterVisionCompletion(openrouter, messages);
+      const content = response.choices[0].message.content.trim();
+      const model = response.model || AI_PROVIDERS_CONFIG.openrouter.model;
 
-    // Parse JSON response
+      return parseVisionJsonResponse(content, model);
+    }
+
+    throw new Error(`Provider "${provider}" indisponible en mode gratuit uniquement`);
+  } catch (error) {
+    console.error('Error analyzing image:', error);
+    throw error;
+  }
+}
+
+function parseVisionJsonResponse(content, model) {
     let analysisData;
     try {
-      // Remove markdown code blocks if present
-      const jsonContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      const jsonContent = content.trim().replace(/```json\n?/g, '').replace(/```\n?/g, '');
       analysisData = JSON.parse(jsonContent);
     } catch (parseError) {
       console.error('Error parsing JSON response:', parseError);
@@ -403,10 +427,6 @@ Return ONLY the JSON object, no other text.`
       atmosphere: analysisData.atmosphere || '',
       colors: analysisData.dominant_colors || [],
       quality: analysisData.quality || { score: 75, sharpness: 'good', lighting: 'good', composition: 'good', overall_rating: 'good' },
-      aiModel: model // Retourner le modèle utilisé
+      aiModel: model
     };
-  } catch (error) {
-    console.error('Error analyzing image with OpenAI:', error);
-    throw error;
-  }
 }

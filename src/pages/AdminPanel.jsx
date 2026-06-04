@@ -16,10 +16,8 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('users'); // 'users', 'email-test', or 'ai-settings'
   const [aiProvider, setAiProvider] = useState('ollama')
   const [availableModels, setAvailableModels] = useState({
-    openai: false,
-    grok: false,
     ollama: true,
-    openrouter: false
+    openrouter: true,
   })
   
   const [formData, setFormData] = useState({
@@ -47,12 +45,10 @@ export default function AdminPanel() {
       
       if (response.ok) {
         const data = await response.json();
-        setAiProvider(data.provider || 'huggingface');
+        setAiProvider(data.provider || 'openrouter');
         setAvailableModels(data.availableModels || {
-          openai: false,
-          grok: false,
           ollama: true,
-          openrouter: false
+          openrouter: true,
         });
       }
     } catch (error) {
@@ -442,54 +438,14 @@ export default function AdminPanel() {
               Configuration des Modèles IA
             </h3>
             <p className="text-gray-600">
-              Sélectionnez les modèles IA disponibles et choisissez celui à utiliser par défaut
+              Modèles <strong>gratuits uniquement</strong> : Ollama (local) ou OpenRouter (Nemotron VL :free)
             </p>
           </div>
 
           {/* Available Models */}
           <div className="mb-8">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">Modèles Disponibles</h4>
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">Modèles gratuits</h4>
             <div className="space-y-3">
-              {/* OpenAI */}
-              <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer transition-colors">
-                <input
-                  type="checkbox"
-                  checked={availableModels.openai}
-                  onChange={(e) => setAvailableModels({ ...availableModels, openai: e.target.checked })}
-                  className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <Cpu className="w-5 h-5 text-blue-600" />
-                    <span className="font-semibold text-gray-900">OpenAI GPT-4o</span>
-                    <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">Payant</span>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Modèle le plus puissant, analyse exhaustive en français (50-100+ tags)
-                  </p>
-                </div>
-              </label>
-
-              {/* Grok */}
-              <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 cursor-pointer transition-colors">
-                <input
-                  type="checkbox"
-                  checked={availableModels.grok}
-                  onChange={(e) => setAvailableModels({ ...availableModels, grok: e.target.checked })}
-                  className="w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <Cpu className="w-5 h-5 text-purple-600" />
-                    <span className="font-semibold text-gray-900">Grok Vision (xAI)</span>
-                    <span className="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-700 rounded-full">Payant</span>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Modèle alternatif puissant, analyse détaillée
-                  </p>
-                </div>
-              </label>
-
               {/* Ollama */}
               <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-green-300 cursor-pointer transition-colors">
                 <input
@@ -521,11 +477,11 @@ export default function AdminPanel() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <Cpu className="w-5 h-5 text-orange-600" />
-                    <span className="font-semibold text-gray-900">OpenRouter Vision</span>
+                    <span className="font-semibold text-gray-900">OpenRouter Nemotron VL</span>
                     <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 rounded-full">Gratuit</span>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
-                    Modèles vision gratuits via API (Gemini 2.0, Qwen, Llama 4) - 1000 appels/jour
+                    nvidia/nemotron-nano-12b-v2-vl:free — vision, 0 € (quota OpenRouter :free)
                   </p>
                 </div>
               </label>
@@ -536,32 +492,6 @@ export default function AdminPanel() {
           <div className="mb-6">
             <h4 className="text-lg font-semibold text-gray-900 mb-4">Modèle Actif</h4>
             <div className="space-y-2">
-              {availableModels.openai && (
-                <label className="flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input
-                    type="radio"
-                    name="aiProvider"
-                    value="openai"
-                    checked={aiProvider === 'openai'}
-                    onChange={(e) => setAiProvider(e.target.value)}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <span className="font-medium text-gray-900">OpenAI GPT-4o</span>
-                </label>
-              )}
-              {availableModels.grok && (
-                <label className="flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input
-                    type="radio"
-                    name="aiProvider"
-                    value="grok"
-                    checked={aiProvider === 'grok'}
-                    onChange={(e) => setAiProvider(e.target.value)}
-                    className="w-4 h-4 text-purple-600"
-                  />
-                  <span className="font-medium text-gray-900">Grok Vision</span>
-                </label>
-              )}
               {availableModels.ollama && (
                 <label className="flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                   <input
@@ -585,7 +515,7 @@ export default function AdminPanel() {
                     onChange={(e) => setAiProvider(e.target.value)}
                     className="w-4 h-4 text-orange-600"
                   />
-                  <span className="font-medium text-gray-900">OpenRouter Vision</span>
+                  <span className="font-medium text-gray-900">OpenRouter Nemotron VL (gratuit)</span>
                 </label>
               )}
             </div>

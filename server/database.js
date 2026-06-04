@@ -126,8 +126,9 @@ db.run(`
   )
 `);
 
-// Initialiser le provider IA par défaut (OpenAI)
-db.run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('ai_provider', 'openai')`);
+// Provider IA par défaut : OpenRouter gratuit (ou Ollama si pas de clé)
+db.run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('ai_provider', 'openrouter')`);
+db.run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('enabled_providers', '{"ollama":true,"openrouter":true,"openai":false,"grok":false}')`);
 
 saveDatabase();
 
